@@ -2,34 +2,34 @@
 
 This is a small utility to use *property based testing* in JUnit. The library is capable to deserialize objects from JSON files and use them in JUnit.
 
-The use case in mind was to 
+The use case in mind was to exchange dto objects between two teams - a provider and a consumer without doing breaking changes.
 
 ## Overview
 
 ```
-   +----------------------------+
-   | Provider (Team 1)          |
-   +----------------------------+
-   |                            |
-   | - contract-examples:1.5.3  |
-   | - contract-api:1.5         |
-   | - dto-assertions           |
-   |                            |
-   +-------------------+--------+
+   +--------------------------------+
+   | Provider (Team 1)              |
+   +--------------------------------+
+   |                                |
+   | - contract-examples:latest-rel |
+   | - contract-api:1.5             |
+   | - dto-assertions               |
+   |                                |
+   +-------------------+------------+
                        |
-   +-------------------+--------+
-   | contract-examples          |
-   +-------------------+--------+             
+   +-------------------+------------+
+   | contract-examples (Both teams) |
+   +-------------------+------------+             
                        |
-   +-------------------+--------+
-   | Consumer (Team 2)          |
-   +----------------------------+
-   |                            |
-   | - contract-examples:1.5.3  |
-   | - contract-api:1.2         |
-   | - dto-assertions           |
-   |                            |
-   +----------------------------+
+   +-------------------+------------+
+   | Consumer (Team 2)              |
+   +--------------------------------+
+   |                                |
+   | - contract-examples:latest-rel |
+   | - contract-api:1.2             |
+   | - dto-assertions               |
+   |                                |
+   +--------------------------------+
 ```
 
 The consumer uses an older API. By having all parties using the latest examples both team ensure the data from the latest `contract-api` (here as an example version 1.5) is compatible to all parties.
@@ -40,7 +40,7 @@ The consumer uses an older API. By having all parties using the latest examples 
 mvn clean install
 ```
 
-Then use in your project:
+Then declare them as test dependencies in your project:
 
 ```xml
 	<dependencies>
@@ -69,7 +69,9 @@ Then use in your project:
 
 # Integrate
 
-Feel free to declare the `dto-assertions` as a test dependency or just copy the classes to you project test utility project.
+Declare the `dto-assertions` as a test dependency or just copy the classes to you project test utility project.
+
+See the [class XkcdComicInfoContractTest](dummy-api/src/test/java/de/servicezombie/samples/xkcd_transfer/XkcdComicInfoContractTest.java) for examples to check for mandatory, outdated fields or regular constraints.
 
 # Criticism
 

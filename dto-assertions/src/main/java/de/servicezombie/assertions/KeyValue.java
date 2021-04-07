@@ -1,11 +1,11 @@
-package de.servicezombie.assertions.dto;
+package de.servicezombie.assertions;
 
-public class KeyValue {
+class KeyValue {
 
 	public final String key;
 	public final String value;
 
-	public KeyValue(final String key, final String value) {
+	KeyValue(final String key, final String value) {
 		this.key = key;
 		this.value = value;
 	}

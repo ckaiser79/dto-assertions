@@ -1,4 +1,4 @@
-package de.servicezombie.assertions;
+package de.servicezombie.assertions.api;
 
 public class SchemaValidationFailedError extends AssertionError {
 	

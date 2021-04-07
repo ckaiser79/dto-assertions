@@ -1,19 +1,26 @@
-package de.servicezombie.assertions;
+package de.servicezombie.assertions.api;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-import de.servicezombie.assertions.dto.Example;
-import de.servicezombie.assertions.dto.Examples;
-import de.servicezombie.assertions.dto.Section;
+import de.servicezombie.assertions.Example;
+import de.servicezombie.assertions.Examples;
+import de.servicezombie.assertions.Section;
 
 /**
  * There might be later non json based implementations?
  */
 public interface ExamplesLoadService {
 
+	/**
+	 * See {@link #toJunitParameters(String, Predicate)} with all items returned.
+	 * 
+	 * @param classpathResource e.g. 'v1/info.toc.json'
+	 * @return all files defined to classpathTocResource - Collection[ { Example } ]
+	 * @throws IOException
+	 */
 	Collection<Object[]> toJunitParameters(final String classpathResource) throws IOException;
 
 	/**
@@ -28,11 +35,10 @@ public interface ExamplesLoadService {
 	 *   	return new ExamplesLoadServiceImpl().toJunitParameters("toc.json");
 	 *   }
 	 *   
-	 *   final BeanAnalyserFactory factory = new BeanAnalyserFactory();
 	 *   final BeanAnalyser<?> analyser;
 	 *	
 	 *   public (ExamplesSelection resource) {
-	 *     analyser = factory.fromJson(resource.getFile(), MyClass.class);
+	 *     analyser = BeanAnalyserFactory.getDefaultInstance().fromJson(resource.getFile(), MyClass.class);
 	 *     analyser.setSource(resource.getSectionName() + "#" + resource.getFile());	
 	 *   }
 	 *   
@@ -40,7 +46,9 @@ public interface ExamplesLoadService {
 	 * }
 	 * </pre>
 	 * 
-	 * @return
+	 * @param classpathTocResource e.g. 'v1/info.toc.json'
+	 * @param includedSectionStrategy define which Example objects should be included.
+	 * @return all files defined to classpathTocResource - Collection[ { Example } ]
 	 * @throws IOException
 	 */
 	Collection<Object[]> toJunitParameters(final String classpathResource, final Predicate<Section> includedSectionStrategy) throws IOException;

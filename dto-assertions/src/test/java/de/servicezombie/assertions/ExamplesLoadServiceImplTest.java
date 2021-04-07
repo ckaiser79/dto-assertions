@@ -8,8 +8,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.servicezombie.assertions.dto.Example;
-import de.servicezombie.assertions.dto.Examples;
+import de.servicezombie.assertions.api.ExamplesLoadService;
+import de.servicezombie.assertions.api.IncludeSectionByAnyTagPredicate;
 
 import static org.hamcrest.MatcherAssert.assertThat; 
 import static org.hamcrest.Matchers.*;
@@ -21,7 +21,7 @@ public class ExamplesLoadServiceImplTest {
 	@Before
 	public void configure() throws Exception {
 		openMocks(this);
-		testee = new ExamplesLoadServiceImpl();
+		testee = new ExampleLoadServiceJacksonImpl();
 	}
 	
 	@Test

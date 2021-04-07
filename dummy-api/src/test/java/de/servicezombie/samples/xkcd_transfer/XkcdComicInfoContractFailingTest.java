@@ -1,6 +1,8 @@
 package de.servicezombie.samples.xkcd_transfer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -11,10 +13,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.servicezombie.assertions.BeanAnalyser;
-import de.servicezombie.assertions.BeanAnalyserFactory;
-import de.servicezombie.assertions.ExamplesLoadService;
-import de.servicezombie.assertions.ExamplesLoadServiceImpl;
-import de.servicezombie.assertions.dto.Example;
+import de.servicezombie.assertions.Example;
+import de.servicezombie.assertions.ExampleLoadServiceJacksonImpl;
+import de.servicezombie.assertions.PropertyValue;
+import de.servicezombie.assertions.api.BeanAnalyserFactory;
+import de.servicezombie.assertions.api.ExamplesLoadService;
 
 /**
  * Failing tests to visualize error messages of the assertions library.
@@ -24,7 +27,7 @@ public class XkcdComicInfoContractFailingTest {
 	
 	@Parameters
 	public static Collection<Object[]> exampleFiles() throws IOException {		
-		final ExamplesLoadService examplesService = new ExamplesLoadServiceImpl();
+		final ExamplesLoadService examplesService = new ExampleLoadServiceJacksonImpl();
 		return examplesService.toJunitParameters("v1/info.toc.json");
 	}
 

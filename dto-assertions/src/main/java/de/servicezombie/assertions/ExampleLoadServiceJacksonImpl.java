@@ -11,33 +11,22 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.servicezombie.assertions.dto.Example;
-import de.servicezombie.assertions.dto.Examples;
-import de.servicezombie.assertions.dto.Section;
-public class ExamplesLoadServiceImpl implements ExamplesLoadService {
+import de.servicezombie.assertions.api.ExamplesLoadService;
+public class ExampleLoadServiceJacksonImpl implements ExamplesLoadService {
 
-	/**
-	 * Load examples in domain objects.
-	 * 
-	 * @param classpathResource, e.g. 'testdata/toc.json'
-	 * @return
-	 * @throws IOException
-	 */
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
 	@Override
 	public Examples loadTocFromSystemResource(final String classpathResource) throws IOException {
 		final InputStream input = ClassLoader.getSystemResourceAsStream(classpathResource);
 		if (input == null)
 			throw new IllegalArgumentException("no validation file available: " + classpathResource);
 
-		final ObjectMapper om = new ObjectMapper();
-		final Examples examples = om.reader().readValue(input, Examples.class);
+		final Examples examples = objectMapper.reader().readValue(input, Examples.class);
 
 		return examples;
 	}
 
-	/**
-	 * Reduce the total examples.
-	 */
 	@Override
 	public List<Example> includedExamples(final Examples examples,
 			final Predicate<Section> includedSectionStrategy) {
@@ -65,39 +54,13 @@ public class ExamplesLoadServiceImpl implements ExamplesLoadService {
 		return result;
 	}
 
-	/**
-	 * For using in a JUnit Parameterized runner:
-	 * 
-	 * <pre>
-	 * &#64;RunWith(Parameterized.class)
-	 * public class XkcdComicInfoContractTest {
-	 *
-	 *   &#64;Parameters
-	 *   public static Collection<Object[]> exampleFiles() throws IOException { 
-	 *   	return new ExamplesLoadServiceImpl().toJunitParameters("toc.json");
-	 *   }
-	 *   
-	 *   final BeanAnalyserFactory factory = new BeanAnalyserFactory();
-	 *   final BeanAnalyser<?> analyser;
-	 *	
-	 *   public (ExamplesSelection resource) {
-	 *     analyser = factory.fromJson(resource.getFile(), MyClass.class);
-	 *     analyser.setSource(resource.getSectionName() + "#" + resource.getFile());	
-	 *   }
-	 *   
-	 *   // ...
-	 * }
-	 * </pre>
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
+
 	@Override
-	public Collection<Object[]> toJunitParameters(final String classpathResource,
+	public Collection<Object[]> toJunitParameters(final String classpathTocResource,
 			final Predicate<Section> includedSectionStrategy) throws IOException {
 
 		final Collection<Object[]> result = new LinkedList<>();
-		final Examples examples = loadTocFromSystemResource(classpathResource);
+		final Examples examples = loadTocFromSystemResource(classpathTocResource);
 
 		final List<Example> includedExamples = includedExamples(examples, includedSectionStrategy);
 
@@ -120,6 +83,10 @@ public class ExamplesLoadServiceImpl implements ExamplesLoadService {
 		}
 
 		return result;
+	}
+	
+	public void setObjectMapper(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
 	}
 
 }

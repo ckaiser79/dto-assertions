@@ -8,11 +8,11 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import de.servicezombie.assertions.dto.KeyValue;
 import junit.framework.AssertionFailedError;
 
 /**
- * Class is not thread safe.
+ * Used to analyse an api class, which contains data deserialized.
+ * <em>Class is not thread safe.</em>
  */
 public class BeanAnalyser<T> {
 
@@ -93,6 +93,18 @@ public class BeanAnalyser<T> {
 
 	}
 
+	private Object invokeNestedProperty(final Object bean, final String fieldName) throws NoSuchMethodException {
+		Object currentBean = bean;
+		
+		final String[] parts = fieldName.split("\\.");
+		for (final String propertyName : parts) {
+			currentBean = invokeDirectProperty(currentBean, propertyName);
+			
+		}
+		
+		return currentBean;
+	}
+	
 	private Object computeCallableNextValue(final Object value) {
 		final Object result;
 
@@ -197,6 +209,26 @@ public class BeanAnalyser<T> {
 			return BeanUtils.getNestedProperty(bean, name);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			throw new IllegalArgumentException("property " + name + " is not available", e);
+		}
+	}
+	
+	public boolean isPropertyExists(String name) {
+		try {
+			BeanUtils.getNestedProperty(bean, name);
+			return true;
+		} catch(NoSuchMethodException e) {
+			return false;
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new IllegalArgumentException("property " + name + " is not available", e);
+		}
+	}
+	
+	public PropertyValue getOptionalProperty(String name) {
+		try {
+			Object r = invokeNestedProperty(bean, name);
+			return new PropertyValue(r, true);
+		} catch (NoSuchMethodException e) {
+			return new PropertyValue("<" + name + ">", false);
 		}
 	}
 

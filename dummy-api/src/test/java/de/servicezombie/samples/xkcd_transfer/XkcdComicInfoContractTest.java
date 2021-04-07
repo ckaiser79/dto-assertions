@@ -4,7 +4,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -15,10 +17,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import de.servicezombie.assertions.BeanAnalyser;
-import de.servicezombie.assertions.BeanAnalyserFactory;
-import de.servicezombie.assertions.ExamplesLoadService;
-import de.servicezombie.assertions.ExamplesLoadServiceImpl;
-import de.servicezombie.assertions.dto.Example;
+import de.servicezombie.assertions.Example;
+import de.servicezombie.assertions.PropertyValue;
+import de.servicezombie.assertions.api.BeanAnalyserFactory;
+import de.servicezombie.assertions.api.ExamplesLoadService;
 
 /**
  * Some examples how to assert, data files match the contract. The contract
@@ -29,7 +31,8 @@ public class XkcdComicInfoContractTest {
 	
 	@Parameters
 	public static Collection<Object[]> exampleFiles() throws IOException {		
-		final ExamplesLoadService examplesService = new ExamplesLoadServiceImpl();
+		final ExamplesLoadService examplesService = BeanAnalyserFactory
+				.createExampleLoaderService();
 		return examplesService.toJunitParameters("v1/info.toc.json");
 	}
 
@@ -97,5 +100,27 @@ public class XkcdComicInfoContractTest {
 		final String secondFirstname = analyser.getProperty("actors[1].firstname");
 		assertEquals("Helge", secondFirstname);
 	}
+	
+	
+	@Test
+	public void shouldGetOptionalFieldValue() {
+		PropertyValue propertyValue;
+		
+		propertyValue = analyser.getOptionalProperty("actors[].birthday");
+		if(propertyValue.isExists())
+		{
+			fail("birthday value exists?");	
+		}
+		
+		propertyValue = analyser.getOptionalProperty("actors[].lastname");
+		if(!propertyValue.isExists()) 
+		{
+			fail("firstname value missing");	
+		}
+		
+		String lastname = propertyValue.getValue();
+		assertNotNull(lastname);
+	}
+
 	
 }

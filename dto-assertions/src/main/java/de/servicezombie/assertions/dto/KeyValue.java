@@ -1,6 +1,6 @@
-package de.servicezombie.assertions;
+package de.servicezombie.assertions.dto;
 
-class KeyValue {
+public class KeyValue {
 
 	public final String key;
 	public final String value;

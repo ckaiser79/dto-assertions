@@ -10,7 +10,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-public class ExamplesLoadServiceImpl {
+
+import de.servicezombie.assertions.dto.Example;
+import de.servicezombie.assertions.dto.Examples;
+import de.servicezombie.assertions.dto.Section;
+public class ExamplesLoadServiceImpl implements ExamplesLoadService {
 
 	/**
 	 * Load examples in domain objects.
@@ -19,6 +23,7 @@ public class ExamplesLoadServiceImpl {
 	 * @return
 	 * @throws IOException
 	 */
+	@Override
 	public Examples loadTocFromSystemResource(final String classpathResource) throws IOException {
 		final InputStream input = ClassLoader.getSystemResourceAsStream(classpathResource);
 		if (input == null)
@@ -33,6 +38,7 @@ public class ExamplesLoadServiceImpl {
 	/**
 	 * Reduce the total examples.
 	 */
+	@Override
 	public List<Example> includedExamples(final Examples examples,
 			final Predicate<Section> includedSectionStrategy) {
 
@@ -86,6 +92,7 @@ public class ExamplesLoadServiceImpl {
 	 * @return
 	 * @throws IOException
 	 */
+	@Override
 	public Collection<Object[]> toJunitParameters(final String classpathResource,
 			final Predicate<Section> includedSectionStrategy) throws IOException {
 
@@ -101,6 +108,7 @@ public class ExamplesLoadServiceImpl {
 		return result;
 	}
 
+	@Override
 	public Collection<Object[]> toJunitParameters(final String classpathResource) throws IOException {
 
 		final Collection<Object[]> result = new LinkedList<>();

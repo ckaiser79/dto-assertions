@@ -1,4 +1,4 @@
-package de.servicezombie.assertions;
+package de.servicezombie.assertions.dto;
 
 import java.util.ArrayList;
 import java.util.List;

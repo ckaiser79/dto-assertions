@@ -16,8 +16,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 import de.servicezombie.assertions.BeanAnalyser;
 import de.servicezombie.assertions.BeanAnalyserFactory;
-import de.servicezombie.assertions.Example;
+import de.servicezombie.assertions.ExamplesLoadService;
 import de.servicezombie.assertions.ExamplesLoadServiceImpl;
+import de.servicezombie.assertions.dto.Example;
 
 /**
  * Some examples how to assert, data files match the contract. The contract
@@ -28,7 +29,7 @@ public class XkcdComicInfoContractTest {
 	
 	@Parameters
 	public static Collection<Object[]> exampleFiles() throws IOException {		
-		final ExamplesLoadServiceImpl examplesService = new ExamplesLoadServiceImpl();
+		final ExamplesLoadService examplesService = new ExamplesLoadServiceImpl();
 		return examplesService.toJunitParameters("v1/info.toc.json");
 	}
 

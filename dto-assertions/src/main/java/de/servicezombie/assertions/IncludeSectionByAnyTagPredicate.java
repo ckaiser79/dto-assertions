@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import de.servicezombie.assertions.dto.Section;
+
 public class IncludeSectionByAnyTagPredicate implements Predicate<Section> {
 
 	private final Set<String> includedTags = new HashSet<>();

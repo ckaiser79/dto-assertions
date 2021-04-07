@@ -1,4 +1,4 @@
-package de.servicezombie.assertions;
+package de.servicezombie.assertions.dto;
 
 public class Example {
 
@@ -6,7 +6,7 @@ public class Example {
 
 	private final String file;
 
-	Example(final Section section, final String file) {
+	public Example(final Section section, final String file) {
 		this.section = section;
 		this.file = file;
 	}

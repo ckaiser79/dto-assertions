@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.servicezombie.assertions.dto.KeyValue;
 import junit.framework.AssertionFailedError;
 
 /**

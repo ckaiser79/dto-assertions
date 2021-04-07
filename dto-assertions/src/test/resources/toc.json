@@ -1,0 +1,20 @@
+{
+	"name": "A descriptive name of the example files",
+	"sections": [
+		{
+			"tags": [ "local", "regression" ],
+			"name": "local unit tests",
+			"files": [
+				"info.0.json",
+				"info.2.json"
+			]
+		},
+		{
+			"tags": [ "regression" ],
+			"name": "regression only unit tests",
+			"files": [
+				"info.1.json"
+			]
+		}
+	]
+}

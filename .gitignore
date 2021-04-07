@@ -1,0 +1,11 @@
+*~
+*workspace
+target/
+.project
+.classpath
+bin
+*bak
+.history
+.vagrant
+.settings
+.settings/

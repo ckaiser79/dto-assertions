@@ -1,0 +1,11 @@
+{ 
+  "name": "A descriptive name of the example files",
+  "sections": [
+      {
+        "files": [ 
+        "v2/info.5-missing-field-in-java.json", 
+        "v2/info.4.json" 
+        ]
+      }
+  ]
+}

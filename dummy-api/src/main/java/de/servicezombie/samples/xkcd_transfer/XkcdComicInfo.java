@@ -2,8 +2,13 @@ package de.servicezombie.samples.xkcd_transfer;
 
 import java.util.List;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 public class XkcdComicInfo {
 
+	@Min(1)
+	@Max(12)
 	private int month;
 	private int year;
 	private int day;

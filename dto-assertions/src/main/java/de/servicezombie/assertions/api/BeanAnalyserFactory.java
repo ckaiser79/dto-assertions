@@ -29,6 +29,7 @@ public class BeanAnalyserFactory {
 	
 	private Charset charset = Charset.forName("UTF8");
 	private ObjectMapper objectMapper = new ObjectMapper();
+	private boolean enableAutoValidation;
 	
 	public <T> BeanAnalyser<T> fromJson(String classpathResource, Class<T> valueType) throws IOException {
 		final InputStream in = ClassLoader.getSystemResourceAsStream(classpathResource);
@@ -41,7 +42,7 @@ public class BeanAnalyserFactory {
 	
 	public <T> BeanAnalyser<T> fromJson(Reader in, Class<T> valueType) throws IOException {
 
-		// read with unknown properties in the sample file
+		// read with unknown properties in the sample file, be fault tolerant on reading
 		final T pojo = objectMapper
 				.reader()
 				.withoutFeatures(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
@@ -49,7 +50,15 @@ public class BeanAnalyserFactory {
 				.readValue(in, valueType);
 		
 		final BeanAnalyser<T> result = new BeanAnalyser<T>(pojo);
+		if(enableAutoValidation) {
+			result.validate();
+		}
 		return result;
+	}
+	
+	public BeanAnalyserFactory withAutoValidation(final boolean enabled) {
+		this.enableAutoValidation = enabled;
+		return this;
 	}
 	
 	public BeanAnalyserFactory withCharset(final String charset) {

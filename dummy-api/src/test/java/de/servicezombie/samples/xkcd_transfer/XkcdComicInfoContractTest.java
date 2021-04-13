@@ -21,6 +21,7 @@ import de.servicezombie.assertions.Example;
 import de.servicezombie.assertions.PropertyValue;
 import de.servicezombie.assertions.api.BeanAnalyserFactory;
 import de.servicezombie.assertions.api.ExamplesLoadService;
+import de.servicezombie.assertions.api.SchemaValidationFailedError;
 
 /**
  * Some examples how to assert, data files match the contract. The contract
@@ -28,21 +29,21 @@ import de.servicezombie.assertions.api.ExamplesLoadService;
  */
 @RunWith(Parameterized.class)
 public class XkcdComicInfoContractTest {
-	
+
 	@Parameters
-	public static Collection<Object[]> exampleFiles() throws IOException {		
-		final ExamplesLoadService examplesService = BeanAnalyserFactory
-				.createExampleLoaderService();
-		return examplesService.toJunitParameters("v1/info.toc.json");
+	public static Collection<Object[]> exampleFiles() throws IOException {
+		final ExamplesLoadService examplesService = BeanAnalyserFactory.createExampleLoaderService();
+		final Collection<Object[]> parameters = examplesService.toJunitParameters("v1/info.toc.json");
+
+		// parameters.addAll(examplesService.toJunitParameters("v2/info.toc.json"));
+		return parameters;
 	}
 
 	private final BeanAnalyser<XkcdComicInfo> analyser;
 
 	public XkcdComicInfoContractTest(final Example example) throws IOException {
-		analyser = BeanAnalyserFactory
-				.getDefaultInstance()
-				.fromJson(example.getFile(), XkcdComicInfo.class);
-		analyser.setSource(example.getSectionName() + "#" + example.getFile());		
+		analyser = BeanAnalyserFactory.getDefaultInstance().fromJson(example.getFile(), XkcdComicInfo.class);
+		analyser.setSource(example.getFile());
 	}
 
 	/**
@@ -50,22 +51,32 @@ public class XkcdComicInfoContractTest {
 	 */
 	@Test
 	public void shouldContainMandatoryFields() {
-		analyser.assertFieldsExists(
-				"month", "day",
-				"genres[]",
-				"actors[].firstname",
-				"actors[].lastname");
+		analyser.assertFieldsExists("month", "day", "genres[]", "actors[].firstname", "actors[].lastname");
+	}
+
+	@Test
+	public void findRemovedMissingMandatoryFieldsByValidatorApi() {
+		if (analyser.getSource().startsWith("info.5.")) {
+			try {
+				analyser.validate();
+				fail("no validation exception received");
+			}
+			catch(SchemaValidationFailedError e) {
+				
+			}
+		}
+	}
+
+	@Test
+	public void findRemovedMissingMandatoryFieldsManually() {
+		analyser.assertFieldsExists("month");
 	}
 
 	@Test
 	public void shouldNotContainRemovedFields() {
-		analyser.assertFieldsMissing(
-				"foo",
-				"tags[]",
-				"actors[].birthday");
+		analyser.assertFieldsMissing("foo", "tags[]", "actors[].birthday");
 	}
 
-	
 	@Test
 	public void shouldHaveValidMonthValue() throws Exception {
 
@@ -100,27 +111,23 @@ public class XkcdComicInfoContractTest {
 		final String secondFirstname = analyser.getProperty("actors[1].firstname");
 		assertEquals("Helge", secondFirstname);
 	}
-	
-	
+
 	@Test
 	public void shouldGetOptionalFieldValue() {
 		PropertyValue propertyValue;
-		
+
 		propertyValue = analyser.getOptionalProperty("actors[].birthday");
-		if(propertyValue.isExists())
-		{
-			fail("birthday value exists?");	
+		if (propertyValue.isExists()) {
+			fail("birthday value exists?");
 		}
-		
+
 		propertyValue = analyser.getOptionalProperty("actors[].lastname");
-		if(!propertyValue.isExists()) 
-		{
-			fail("firstname value missing");	
+		if (!propertyValue.isExists()) {
+			fail("firstname value missing");
 		}
-		
+
 		String lastname = propertyValue.getValue();
 		assertNotNull(lastname);
 	}
 
-	
 }

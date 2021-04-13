@@ -5,14 +5,21 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.servicezombie.assertions.api.SchemaValidationFailedError;
 import junit.framework.AssertionFailedError;
 
 /**
- * Used to analyse an api class, which contains data deserialized.
- * <em>Class is not thread safe.</em>
+ * Used to analyse an api class, which contains data deserialized. <em>Class is
+ * not thread safe.</em>
  */
 public class BeanAnalyser<T> {
 
@@ -33,7 +40,7 @@ public class BeanAnalyser<T> {
 
 		final List<KeyValue> failures = new LinkedList<>();
 		String lastValuePath;
-		
+
 		for (final String fieldName : fieldNames) {
 
 			Object currentBean = bean;
@@ -41,7 +48,7 @@ public class BeanAnalyser<T> {
 
 			final String[] parts = fieldName.split("\\.");
 			boolean allExist = true;
-			
+
 			// foo[].name.lastname
 			for (final String propertyName : parts) {
 
@@ -49,13 +56,13 @@ public class BeanAnalyser<T> {
 
 				try {
 					currentBean = invokeDirectProperty(currentBean, propertyName);
-					
+
 				} catch (NoSuchMethodException e) { // property does not exist
 					allExist = false;
 				}
 			}
-			
-			if(allExist) {
+
+			if (allExist) {
 				failures.add(new KeyValue("unwanted-data-exists", lastValuePath));
 			}
 
@@ -69,7 +76,7 @@ public class BeanAnalyser<T> {
 
 		final List<KeyValue> failures = new LinkedList<>();
 		String lastValuePath;
-		
+
 		for (final String fieldName : fieldNames) {
 
 			Object currentBean = bean;
@@ -95,16 +102,16 @@ public class BeanAnalyser<T> {
 
 	private Object invokeNestedProperty(final Object bean, final String fieldName) throws NoSuchMethodException {
 		Object currentBean = bean;
-		
+
 		final String[] parts = fieldName.split("\\.");
 		for (final String propertyName : parts) {
 			currentBean = invokeDirectProperty(currentBean, propertyName);
-			
+
 		}
-		
+
 		return currentBean;
 	}
-	
+
 	private Object computeCallableNextValue(final Object value) {
 		final Object result;
 
@@ -138,9 +145,7 @@ public class BeanAnalyser<T> {
 
 			sb.append("\n");
 
-			failures
-					.stream()
-					.forEach(kv -> sb.append(kv.key).append(": ").append(kv.value).append("\n"));
+			failures.stream().forEach(kv -> sb.append(kv.key).append(": ").append(kv.value).append("\n"));
 			throw new AssertionFailedError(sb.toString());
 		}
 	}
@@ -205,24 +210,25 @@ public class BeanAnalyser<T> {
 	}
 
 	public String getProperty(String name) {
+
 		try {
 			return BeanUtils.getNestedProperty(bean, name);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			throw new IllegalArgumentException("property " + name + " is not available", e);
 		}
 	}
-	
+
 	public boolean isPropertyExists(String name) {
 		try {
 			BeanUtils.getNestedProperty(bean, name);
 			return true;
-		} catch(NoSuchMethodException e) {
+		} catch (NoSuchMethodException e) {
 			return false;
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new IllegalArgumentException("property " + name + " is not available", e);
 		}
 	}
-	
+
 	public PropertyValue getOptionalProperty(String name) {
 		try {
 			Object r = invokeNestedProperty(bean, name);
@@ -240,5 +246,21 @@ public class BeanAnalyser<T> {
 		return source;
 	}
 
+	public void validate() {
+		final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		final Validator validator = factory.getValidator();
+
+		final Set<ConstraintViolation<T>> violations = validator.validate(bean);
+
+		if (!violations.isEmpty()) {
+			final StringBuilder sb = new StringBuilder();
+			for (ConstraintViolation<T> v : violations) {
+				sb.append("\n").append(v.getPropertyPath()).append(" : ").append(v.getMessage());
+			}
+
+			throw new SchemaValidationFailedError(bean, sb.toString());
+		}
+
+	}
 
 }

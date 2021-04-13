@@ -11,6 +11,8 @@
 	"title": "Woodpecker",
 	"day": "24",
 	
+	"deprecated_field": "foo",
+	
 	"genres": [ "animation", "comedy" ],
 	
 	"actors": [

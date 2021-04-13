@@ -1,5 +1,4 @@
 {
-	"month": "7",
 	"num": 614,
 	"link": "",
 	"year": "2009",
@@ -10,8 +9,6 @@
 	"img": "https://imgs.xkcd.com/comics/woodpecker.png",
 	"title": "Woodpecker",
 	"day": "24",
-	
-	"deprecated_field": "foo",
 	
 	"genres": [ "animation", "comedy" ],
 	
